@@ -7,11 +7,17 @@ const initialItems = [
 ];
 
 const App = () => {
+    const [items, setItems] = useState([]);
+
+    const handleItem = (item) => {
+        setItems(items => [...items, item]);
+    };
+
     return (
         <div className="app">
             <Logo></Logo>
-            <Form></Form>
-            <TravelList></TravelList>
+            <Form onAddItem={handleItem}></Form>
+            <TravelList items={items}></TravelList>
             <Stats></Stats>
         </div>
     );
@@ -21,15 +27,17 @@ const Logo = () => {
     return <h1>🏝️ FAR AWAY 🧳</h1>;
 };
 
-const Form = () => {
+const Form = ({onAddItem}) => {
     const [description, setDescription] = useState("");
     const [quantity, setQuantity] = useState(1);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!description) return;
+        const item = { id: initialItems.length, description: description, quantity: quantity, packed: false };
 
-        initialItems.push({ id: initialItems.length, description: description, quantity: quantity, packed: false });
+        onAddItem(item);
+        initialItems.push(item);
         console.log(initialItems);
         setDescription("");
         setQuantity(1);
@@ -63,11 +71,11 @@ const Form = () => {
     );
 };
 
-const TravelList = () => {
+const TravelList = ({items}) => {
     return (
         <div className="list">
             <ul>
-                {initialItems.map((item) => (
+                {items.map((item) => (
                     <li>
                         <span style={item.packed ? { textDecoration: "line-through" } : {}}>
                             {item.quantity} {item.description}
